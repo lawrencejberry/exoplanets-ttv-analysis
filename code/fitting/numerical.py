@@ -35,7 +35,7 @@ def ml_fit(df):
         options={"disp": False, "maxiter": 1e4},
     )
 
-    return (np.atleast_2d(res.x).T,)
+    return (np.atleast_2d(res.x).T, error, 3)
 
 
 def mcmc_fit(df):
@@ -83,4 +83,4 @@ def mcmc_fit(df):
     flat_samples = sampler.get_chain(discard=100, thin=30, flat=True)
     beta = np.percentile(flat_samples, 50, axis=0)
 
-    return (np.atleast_2d(beta).T,)
+    return (np.atleast_2d(beta).T, error, 3)

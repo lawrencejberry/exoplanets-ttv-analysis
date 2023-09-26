@@ -71,20 +71,17 @@ def bayesian_mvn_regression_fit(df):
     )
     t_dof = v + 1 - 3
 
-    mu = beta[2, 0] * (24 * 60 * 60 * 1000)
-    t_sd = np.sqrt(t_sigma[2, 2] * (24 * 60 * 60 * 1000) ** 2)
-    sd = np.sqrt(t_sigma[2, 2] * (t_dof / (t_dof - 2)) * (24 * 60 * 60 * 1000) ** 2)
-    print(
-        f"E[dP/dE] = {mu} ms/epoch SD[dP/dE] = {sd} Prob(dP/dE < 0) = {sp.stats.t.cdf(0, t_dof, mu, t_sd)}"
-    )
-    prior_observation_covariance = S0 / (v0 + len(df) + 1)
+    # mu = beta[2, 0] * (24 * 60 * 60 * 1000)
+    # t_sd = np.sqrt(t_sigma[2, 2] * (24 * 60 * 60 * 1000) ** 2)
+    # sd = np.sqrt(t_sigma[2, 2] * (t_dof / (t_dof - 2)) * (24 * 60 * 60 * 1000) ** 2)
+    # print(
+    #     f"E[dP/dE] = {mu} ms/epoch SD[dP/dE] = {sd} Prob(dP/dE < 0) = {sp.stats.t.cdf(0, t_dof, mu, t_sd)}"
+    # )
     posterior_observation_covariance = S / (
         v + len(df) + 1
     )  # the MAP of the IW distribution over Σ
+    # Similarly: prior_observation_covariance = S0 / (v0 + len(df) + 1)
+    error = np.power(np.diag(posterior_observation_covariance), 0.5)
 
-    return (
-        beta,
-        t_sigma,
-        prior_observation_covariance,
-        posterior_observation_covariance,
-    )
+    k = D + 3
+    return (beta, error, k)
