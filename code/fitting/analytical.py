@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 
 
-def bayesian_mvn_regression_fit(df):
+def bayesian_mvn_regression_fit(df, K0=None):
     """
     An analytical fit based on Bayesian multivariate regression but parameterising both
     the model parameters and observational errors.
@@ -27,7 +27,8 @@ def bayesian_mvn_regression_fit(df):
     # precision on dP/dE is equivalent to saying the 1 standard deviation = 1 ms/epoch i.e. decay on the
     # order of more than a millisecond per epoch is highly unlikely
     ms_in_days = 1e-3 / 60 / 60 / 24
-    K0 = np.diag([1 / constant_fit_P0, 1 / constant_fit_P0, 1 / ms_in_days])
+    if K0 is None:
+        K0 = np.diag([1 / constant_fit_P0, 1 / constant_fit_P0, 1 / ms_in_days])
     K0_inv = np.linalg.inv(K0)
     I = np.identity(3)
 
@@ -71,12 +72,12 @@ def bayesian_mvn_regression_fit(df):
     )
     t_dof = v + 1 - 3
 
-    # mu = beta[2, 0] * (24 * 60 * 60 * 1000)
-    # t_sd = np.sqrt(t_sigma[2, 2] * (24 * 60 * 60 * 1000) ** 2)
-    # sd = np.sqrt(t_sigma[2, 2] * (t_dof / (t_dof - 2)) * (24 * 60 * 60 * 1000) ** 2)
-    # print(
-    #     f"E[dP/dE] = {mu} ms/epoch SD[dP/dE] = {sd} Prob(dP/dE < 0) = {sp.stats.t.cdf(0, t_dof, mu, t_sd)}"
-    # )
+    mu = beta[2, 0] * (24 * 60 * 60 * 1000)
+    t_sd = np.sqrt(t_sigma[2, 2] * (24 * 60 * 60 * 1000) ** 2)
+    sd = np.sqrt(t_sigma[2, 2] * (t_dof / (t_dof - 2)) * (24 * 60 * 60 * 1000) ** 2)
+    print(
+        f"E[dP/dE] = {mu} ms/epoch SD[dP/dE] = {sd} Prob(dP/dE < 0) = {sp.stats.t.cdf(0, t_dof, mu, t_sd)}"
+    )
     posterior_observation_covariance = S / (
         v + len(df) + 1
     )  # the MAP of the IW distribution over Σ
@@ -84,4 +85,4 @@ def bayesian_mvn_regression_fit(df):
     error = np.power(np.diag(posterior_observation_covariance), 0.5)
 
     k = D + 3
-    return (beta, error, k)
+    return (beta, t_sigma, error, k, t_dof)
