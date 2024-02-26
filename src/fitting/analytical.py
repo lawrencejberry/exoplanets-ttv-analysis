@@ -17,8 +17,8 @@ def bayesian_mvn_regression_fit(df, K0=None):
     ).T
     y = np.atleast_2d(df.transit_time.values).T
     constant_fit_beta, _, _, _ = np.linalg.lstsq(X, y, rcond=None)
-    constant_fit_T0 = np.asscalar(constant_fit_beta[0])
-    constant_fit_P0 = np.asscalar(constant_fit_beta[1])
+    constant_fit_T0 = constant_fit_beta[0].item()
+    constant_fit_P0 = constant_fit_beta[1].item()
     beta0 = np.atleast_2d([constant_fit_T0, constant_fit_P0, 0.0]).T
 
     # determine the precision of our prior on beta
