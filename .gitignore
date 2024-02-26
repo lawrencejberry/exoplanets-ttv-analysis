@@ -137,6 +137,3 @@ ui-tests/playwright-report
 ui-tests/.yarn/*
 ui-tests/.pnp.*
 
-# custom
-data/
-papers/
