@@ -74,9 +74,10 @@ def bayesian_mvn_regression_fit(df, K0=None):
 
     mu = beta[2, 0] * (24 * 60 * 60 * 1000)
     t_sd = np.sqrt(t_sigma[2, 2] * (24 * 60 * 60 * 1000) ** 2)
+    posterior_covariance_matrix = t_sigma * (t_dof / (t_dof - 2)) * (24 * 60 * 60 * 1000) ** 2
     sd = np.sqrt(t_sigma[2, 2] * (t_dof / (t_dof - 2)) * (24 * 60 * 60 * 1000) ** 2)
     prob_decay = sp.stats.t.cdf(0, t_dof, mu, t_sd)
-    # print(f"E[dP/dE] = {mu} ms/epoch SD[dP/dE] = {sd} Prob(dP/dE < 0) = {prob_decay}")
+    print(f"E[dP/dE] = {mu} ms/epoch SD[dP/dE] = {sd} Prob(dP/dE < 0) = {prob_decay}")
     posterior_observation_covariance = S / (
         v + len(df) + 1
     )  # the MAP of the IW distribution over Σ
@@ -92,4 +93,5 @@ def bayesian_mvn_regression_fit(df, K0=None):
         t_dof,
         prob_decay,
         posterior_observation_covariance,
+        posterior_covariance_matrix,
     )
